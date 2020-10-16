@@ -1,4 +1,4 @@
-fit.m2clust.eval<-function(resolution,workingDirectory)
+fit.m2clust<-function(resolution,workingDirectory)
 {
   
   #########################
@@ -31,7 +31,7 @@ fit.m2clust.eval<-function(resolution,workingDirectory)
   
   data.path<-paste(workingDirectory,"Input","Distance_Data",sep="\\")
   truth.path<-paste(workingDirectory,"Input","Truth_meta",sep="\\")
-  m2clust.path<-paste(workingDirectory,"m2clust",folder,sep="\\")
+  m2clust.path<-paste (workingDirectory,"m2clust",folder,sep="\\")
   
   ##############################
   ### Getting DataNames List ###
