@@ -1,52 +1,44 @@
 
-#############################################
-### Fitting louvain (Community Detection) ###
-#############################################
+##################################################
+### Fitting SNNclust (Shared Nearest Neighbor) ###
+##################################################
 
 if(!require("purrr")){
 install.packages("purrr")
 }
-if(!require("igraph")){
-install.packages("igraph")
-}
-if(!require("psych")){
-install.packages("psych")
+if(!require("dbscan")){
+install.packages("dbscan")
 }
 suppressPackageStartupMessages(library(purrr)) # MAP function
-suppressPackageStartupMessages(library(igraph)) # louvain function inside igraph library
-suppressPackageStartupMessages(library(psych)) # cor2dist function
+suppressPackageStartupMessages(library(dbscan)) # SNNclust function inside Dbscan library
 
 #############################
 ### Initializing function ###
 #############################
 
-run.louvain<-function(DF,Truth){
+run.SNNclust<-function(DF,Truth){
   
 ######################
 ### Gathering Data ###
 ######################
-
+  
+DF<-scale(DF)
 distDF<-dist(DF)
-DFL<-scale(t(DF))
-corDF<-cor(DFL)
 
 #####################################
-### Cleaning for Low correlations ###
+### Checking Optimal value of eps ###
 #####################################
 
-distDFL<-cor2dist(corDF)
-distDFL<-as.matrix(distDFL)
-distDFL[abs(corDF)<0.2]=0
+#dbscan::kNNdistplot(DF,k=5) # Elbow at 12<eps<15 for most data hence chose eps=14
 
 #########################
 ### Fitting Algorithm ###
 #########################
 
-G1<-graph.adjacency(distDFL,mode="undirected",weighted=T,diag=T)
-resF<-cluster_louvain(G1)$membership
+resF<-sNNclust(DF,k=20,eps=14,minPts=5)$cluster
 resF<-data.frame(Sample=Truth$sampleID,cluster=as.numeric(resF))
 pred.Clusters<-length(unique(table(resF$cluster)))
-
+             
 #############################
 ### Measuring Performance ###
 #############################
