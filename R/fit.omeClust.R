@@ -1,113 +1,39 @@
-fit.omeClust<-function(resolution,workingDirectory)
-{
+
+########################################################
+### Fitting omeClust algorithm (Discrete Silhouette) ###
+########################################################
+
+suppressPackageStartupMessages(library(data.table)) # fread function
+suppressPackageStartupMessages(library(gtools)) # mixed sort function
+
+#############################
+### Initializing function ###
+#############################
+
+run.omeClust<-function(DF,Truth,omeClusters){
   
-  #########################
-  ### Loading Libraries ###
-  #########################
-  
-  library(data.table)
-  library(cluster)
-  
-  ##########################  
-  ### Locating Directory ###
-  ##########################
-  
-  if(resolution=="low")
-  {
-    folder="Low_resolution" 
-  }
-  if(resolution=="medium")
-  {
-    folder="Medium_resolution" 
-  }
-  if(resolution=="high")
-  {
-    folder="High_resolution" 
-  }
-  
-  #########################
-  ### Getting Data Path ###
-  #########################
-  
-  data.path<-paste(workingDirectory,"Input","Distance_Data",sep="\\")
-  truth.path<-paste(workingDirectory,"Input","Truth_meta",sep="\\")
-  omeClust.path<-paste (workingDirectory,"omeClust",folder,sep="\\")
-  
-  ##############################
-  ### Getting DataNames List ###
-  ##############################
-  
-  data.list<-list.files(data.path)
-  truth.list<-list.files(truth.path)
-  omeClust.list<-list.files(omeClust.path)
-  
-  final.output<-NULL
-  for(i in 1:length(data.list))
-  {
-    
-    ####################
-    ### Loading data ###  
-    ####################
-    
-    input.data<-data.frame(read.table(file.path(data.path,data.list[i])))
-    input.data<-as.dist(input.data,diag=T)
-    input.truth<-data.frame(read.table(file.path(truth.path,truth.list[i])))
-    input.omeClust<-data.frame(read.table(file.path(omeClust.path,omeClust.list[i],
-                                                   "clusters.txt"),h=T))
-    
-    ################################
-    ### Getting omeClust clusters ###
-    ################################
-    
-    mem.mat<-NULL
-    for (j in 1:nrow(input.omeClust))
-    {
-      temp<-input.omeClust[j,]
-      cl<-str_sub(temp$cluster,2,str_length(temp$cluster))
-      mem<-unlist(strsplit(as.character(temp$members), ";"))
-      temp1<-data.frame(cbind(members=mem,cluster=rep(cl,length(mem))))
-      mem.mat<-data.frame(rbind(mem.mat,temp1))
-    }
-    mem.mat<-mem.mat[order(as.numeric(mem.mat$cluster)),]
-    
-    #############################
-    ### Creating OutputLabels ###
-    #############################
-    
-    new.filename<-substr(omeClust.list[i],1,nchar(omeClust.list[i])-4)
-    stringLabel<-c('clusters','features','sample','alpha','sd')
-    named.files<-str_split(new.filename,pattern="_")[[1]]
-    names(named.files)<-stringLabel
-    clusters<-as.numeric(named.files["clusters"])
-    features<-as.numeric(named.files["features"])
-    sample<-as.numeric(named.files["sample"])
-    alpha<-as.numeric(named.files["alpha"])
-    sd<-as.numeric(named.files["sd"])
-    
-    #############################
-    ### Measuring Performance ###
-    #############################
-    
-    sil.sc<-silhouette(unname(sapply(mem.mat$cluster,as.numeric)),input.data)
-    sil.sc<-round(mean(sil.sc[,"sil_width"]),2)
-    major.clusters<-nrow(input.omeClust[input.omeClust$resolution_score>=0.10,])
-    measure.df<-cluster_eval(truth=input.truth$Ground.Truth,
-                             predicted=mem.mat$cluster,
-                             nclusters,major.clusters)
-    
-    ##########################
-    ### Organizing Outputs ###
-    ##########################
-    
-    size<-length(unique(mem.mat$cluster))
-    mis_rate<-abs(clusters-size)/sample
-    output.df<-data.frame(clusters=clusters,features=features,
-                          sample=sample,Dist=alpha,SD=sd,
-                          method="omeClust",
-                          major.clusters=major.clusters,
-                          Silhoutte.score=sil.sc,residual=mis_rate)
-    output.df<-data.frame(cbind(output.df,measure.df),check.names=F)
-    final.output<-data.frame(rbind(final.output,output.df))
-  }
-  return(final.output)
+#####################################
+### Extracting Estimated Clusters ###
+#####################################
+
+resF<-NULL
+for(k in seq_along(omeClusters$members)){
+  tmp<-omeClusters$members[k]
+  tmp<-unlist(strsplit(as.character(tmp),";"))
+  tmp<-data.frame(sampleID=tmp,cluster=rep(k,length(tmp)))
+  resF<-data.frame(rbind(resF,tmp))
 }
+resF<-resF[gtools::mixedorder(resF$sampleID), ]
+pred.Clusters<-nrow(omeClusters)
+
+#############################
+### Measuring Performance ###
+#############################
+
+true_labels<-Truth$cluster
+predicted_labels<-resF$cluster
+performance<-cluster_eval(true_labels=true_labels,
+                          predicted_labels=predicted_labels)
+performance<-data.frame(pred.Clusters=pred.Clusters,performance,check.names=F)
+return(performance)
+}  
