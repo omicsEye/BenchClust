@@ -12,6 +12,15 @@ suppressPackageStartupMessages(library(gtools)) # mixed sort function
 
 run.omeClust<-function(DF,Truth,omeClusters){
   
+<<<<<<< HEAD
+=======
+######################
+### Gathering Data ###
+######################
+  
+distDF<-dist(DF)
+
+>>>>>>> 58130d51055631420f557aea35f405f93b3fa9d9
 #####################################
 ### Extracting Estimated Clusters ###
 #####################################
@@ -23,7 +32,12 @@ for(k in seq_along(omeClusters$members)){
   tmp<-data.frame(sampleID=tmp,cluster=rep(k,length(tmp)))
   resF<-data.frame(rbind(resF,tmp))
 }
+<<<<<<< HEAD
 resF<-resF[gtools::mixedorder(resF$sampleID), ]
+=======
+resF$sampleID<-factor(resF$sampleID,levels=gtools::mixedsort(resF$sampleID))
+resF<-resF[order(resF$sampleID),]
+>>>>>>> 58130d51055631420f557aea35f405f93b3fa9d9
 pred.Clusters<-nrow(omeClusters)
 
 #############################
@@ -33,7 +47,12 @@ pred.Clusters<-nrow(omeClusters)
 true_labels<-Truth$cluster
 predicted_labels<-resF$cluster
 performance<-cluster_eval(true_labels=true_labels,
+<<<<<<< HEAD
                           predicted_labels=predicted_labels)
+=======
+                          predicted_labels=predicted_labels,
+                          distDF=distDF)
+>>>>>>> 58130d51055631420f557aea35f405f93b3fa9d9
 performance<-data.frame(pred.Clusters=pred.Clusters,performance,check.names=F)
 return(performance)
 }  
