@@ -8,8 +8,7 @@ rm(list=ls())
 ### Loading Libraries ###
 #########################
 
-workDirectory<-  "/gpfs/gsfs11/users/chatterjees7/omeClust/SingleCell_analysis" 
-suppressPackageStartupMessages(library(pacman))
+workDirectory<-"D:/Repos/omeClust_analysis/R"
 pkgmaker::source_files(paste(workDirectory,'Library',sep='/'),'*.R')
 suppressPackageStartupMessages(pacman::p_load(pkgmaker,data.table,stringr))
 

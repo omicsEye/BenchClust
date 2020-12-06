@@ -15,7 +15,7 @@ core.methods<-function(NUM){
 ### Loading Libraries ###
 #########################
 
-workDirectory<-"/gpfs/gsfs11/users/chatterjees7/omeClust"
+workDirectory<-"D:/Repos/omeClust_analysis/R"
 suppressPackageStartupMessages(library(pacman))
 pkgmaker::source_files(paste(workDirectory,'Library',sep='/'),'*.R')
 suppressPackageStartupMessages(pacman::p_load(pkgmaker,data.table,stringr))

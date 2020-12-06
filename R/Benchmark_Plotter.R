@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library(data.table)) # fread function
 suppressPackageStartupMessages(library(RColorBrewer)) # brewer.pal function
 suppressPackageStartupMessages(library(gridExtra)) # arrangeGrob function
 suppressPackageStartupMessages(library(deepath))
-workDirectory<-"W:/omeClust/SingleCell_analysis"
+workDirectory<-"D:/Repos/omeClust_analysis/R"
 
 ##########################
 ### Output for Figures ###
