@@ -1,3 +1,3 @@
-# omeClust_analysis
+# BenchClust
 
-Analysis codes for omeClust benchmarking.
+This repository includes benchmarking for clustering and community detection techniques.
