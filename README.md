@@ -29,7 +29,7 @@ Sincell    |  Partition          |  K-mediods                     |  R
 pcaReduce  |  Linkage/Partition  |  PCA + k-means + hierarchical  |  R
 SC3        |  Partition          |  PCA + k-means                 |  R
 RaceID3    |  Partition          |  k-means                       |  R
-sccClust   |  graph-based        |  Shared nearest neighbor       |  R
+sNNclust   |  graph-based        |  Shared nearest neighbor       |  R
 
 * Summary of benchmark datasets with ground truth information used for evaluating single-cell clustering techniques (obtained from https://hemberg-lab.github.io/scRNA.seq.datasets/). 
 
